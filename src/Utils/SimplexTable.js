@@ -16,7 +16,7 @@ class SimplexTable{
     let min = Math.min.apply(null, f_objetiva);
     if(min < 0){
         f_objetiva.forEach((x, i) => {
-            if(min == x){
+            if(min === x){
                 return i;
             }
         });
@@ -63,7 +63,7 @@ class SimplexTable{
   }
 
 
-  TwoSteps(variables, numFolgas, numAritificiais, restricoes, f_objetiva){
+  twoSteps(numVariables, numFolgas, numArtificiais, restricoes, f_objetiva){
     
     let table = [];
     
@@ -72,30 +72,30 @@ class SimplexTable{
 
     //insere as restrições na tabela
     restricoes.forEach((x,i) => {
-        let temp = new Array(variables.length + numFolgas + numAritificiais + 1);
+        let temp = new Array(numVariables + numFolgas + numArtificiais + 1);
         
         temp.forEach((x, i) => {
             temp[i] = 0;
         });
         
-        for(let j = 0; j < variables.length; j++ ){
+        for(let j = 0; j < numVariables; j++ ){
             temp[j] = x[j]; 
         }
 
-        switch(x[variables.length]){
+        switch(x[numVariables]){
             case "<=":
-                temp[variables.length + countInFolgas] = 1;
+                temp[numVariables + countInFolgas] = 1;
                 countInFolgas++;
                 break;
         
             case ">=":
-                temp[variables.length + numFolgas + countInArt] = 1;
+                temp[numVariables + numFolgas + countInArt] = 1;
                 countInArt++;
                 break;
             
             case "=":
-                temp[variables.length + countInFolgas] = -1;
-                temp[variables.length + numFolgas + countInArt] = 1;
+                temp[numVariables + countInFolgas] = -1;
+                temp[numVariables + numFolgas + countInArt] = 1;
                 countInArt++;
                 countInFolgas++;
                 break;
@@ -110,7 +110,7 @@ class SimplexTable{
     });
 
     //insere a função objetiva (z) na tabela
-    let z = new Array(variables.length + numFolgas + numAritificiais + 1);
+    let z = new Array(numVariables + numFolgas + numArtificiais + 1);
     z.forEach((x, i) => {
         z[i] = 0;
     });
@@ -127,8 +127,7 @@ class SimplexTable{
 
 
     //insere z' na tabela
-
-    let zLinha = new Array(variables.length + numFolgas + numAritificiais + 1);
+    let zLinha = new Array(numVariables + numFolgas + numArtificiais + 1);
     zLinha.forEach((x, i) => {
         zLinha[i] = 0;
     });
@@ -136,14 +135,14 @@ class SimplexTable{
     let linhasArtificiais = [];
     
     for(let i = 0; i < table.length - 1; i++){
-        for(let j = 0; j < numAritificiais; j++){
-            if(table[i][variables.length + numFolgas + j] == 1){
+        for(let j = 0; j < numArtificiais; j++){
+            if(table[i][numVariables + numFolgas + j] === 1){
                 linhasArtificiais.push(i);
             }
         }
     }
 
-    for(let i = 0; i < variables.length + numFolgas; i++){
+    for(let i = 0; i < numVariables + numFolgas; i++){
         let sumArt = 0;
         linhasArtificiais.forEach(x => {
             sumArt += table[x][i];
@@ -158,8 +157,23 @@ class SimplexTable{
     zLinha[zLinha.length-1] = sumArt;
 
     table.push(zLinha);
+
+
+    // Resolve primeira fase do metodo e retorna a tabela resolvida
+    let firstStepTable = this.resolveSimplex(table);
+    
+    // Limpar tabela, retirando zLinha e artificiais 
+    firstStepTable.pop();
+
+    let a = firstStepTable.splice(0, numVariables + numFolgas - 1);
+    let b = firstStepTable.splice(firstStepTable[0].length - 1);
+    
+    b.forEach((x, i) => {
+        a[i].push(x[0]);
+    });
+
+    // Resolve simplex simples
+    this.resolveSimplex(a);
   }
-
-
 }
 export default SimplexTable;
