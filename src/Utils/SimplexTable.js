@@ -59,14 +59,7 @@ class SimplexTable{
 
     console.log(table);
 
-    return(this.resolveSimplex(table));
+    return this.resolveSimplex(table);
   }
-
-
-
-
-
-
-
 }
 export default SimplexTable;
