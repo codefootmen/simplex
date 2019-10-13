@@ -20,6 +20,8 @@ body,
 
 .App-header {
   margin: 20px;
-  display: flex;
   color: white;
+}
+.table .input{
+    width: 100px;
 }

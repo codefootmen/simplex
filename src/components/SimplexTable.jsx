@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Table } from "bloomer";
 
-class simplexTable extends Component {
+class SimplexTable extends Component {
   render() {
     let pace = this.props.cells.length / this.props.rows.length;
 
@@ -39,4 +39,4 @@ class simplexTable extends Component {
   }
 }
 
-export default simplexTable;
+export default SimplexTable;
