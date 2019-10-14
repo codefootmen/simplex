@@ -13,11 +13,11 @@ class SimplexTable{
         }
     });
 
-    if(pp.length === 0) {
+    let min = Math.min.apply(null, pp);
+    
+    if(min === 99999) {
         return -1;
     }
-
-    let min = Math.min.apply(null, pp);
     
     pp.forEach((x, i) => {
         if(min === x){
