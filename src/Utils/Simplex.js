@@ -43,11 +43,12 @@ class Simplex {
     }
   }
 
-  solveSimplex(table){
+  solveSimplex(table, tam){
     let columnFocus;
     let lineFocus = 0;
     let z = table[table.length - 1];
-    z.pop();
+    if(tam === 0)
+        z.pop();
 
     if(Math.min.apply(null, z) >= 0){
          return table;
@@ -68,6 +69,7 @@ class Simplex {
 
     //divide a linha para transformar o foco em 1
     table[lineFocus].forEach((x, i) => {
+        if(celFocus !== 0)
         table[lineFocus][i] = x/celFocus;
     });
 
@@ -84,7 +86,8 @@ class Simplex {
 
     console.log(table);
 
-    return this.solveSimplex(table);
+    tam++;
+    return this.solveSimplex(table, tam);
   }
 
 
@@ -165,7 +168,7 @@ class Simplex {
     console.log(table);
 
     //insere a função objetiva (z) na tabela
-    let z = new Array(numVariables + numFolgas + numArtificiais + 1);
+    let z = new Array(numVariables + numFolgas + numArtificiais + 2);
 
     for(let i = 0; i < z.length; i++){
         z[i] = 0;
@@ -217,21 +220,28 @@ class Simplex {
 
 
     // Resolve primeira fase do metodo e retorna a tabela resolvida
-    let firstStepTable = this.solveSimplex(table);
+    let firstStepTable = this.solveSimplex(table, 0);
 
     // Limpar tabela, retirando zLinha e artificiais
     firstStepTable.pop();
 
-    let a = firstStepTable.splice(0, numVariables + numFolgas - 1);
-    let b = firstStepTable.splice(firstStepTable.length - 1);
-
-    
-    for(let i = 0; i < b[0].length; i++){
-        a[i].push(b[i][0]);
+    let finalTable = [];
+    for(let i = 0; i < restricoes.length+1; i++){
+        let a = firstStepTable[i].slice(0, numVariables + numFolgas);
+        let b = firstStepTable[i].slice(firstStepTable[i].length - 1);
+        finalTable[i] = [];
+        finalTable[i].push(...a);
+        finalTable[i].push(...b);
     }
 
     // Resolve simplex simples
-    return this.solveSimplex(a);
+    finalTable = this.solveSimplex(finalTable, 0);
+    if(this.isMultiplasSolucoes(restricoes, f_objetiva)){
+        alert("Multiplas soluções ótimas");
+    }
+    else if(this.isDegenerescencia(finalTable)){
+        alert("Degenerescência");
+    }
   }
 
   isMultiplasSolucoes(restricoes, f_objetiva) {
