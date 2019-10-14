@@ -2,12 +2,14 @@ import React, { Component } from "react";
 import { Columns, Column, Title, Field, Label, Control, Input } from "bloomer";
 import SimplexTable from "../components/SimplexTable";
 import InputTable from "../components/InputTable";
+import Simplex from "../Utils/Simplex";
 
 class Home extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      simplex: new Simplex(),
       columns: 2,
       rows: 1
     };
@@ -63,7 +65,7 @@ class Home extends Component {
               <Columns>
                 <Column>
                   <SimplexTable
-                    columns={["A", "B", "C", "D", "E"]}
+                    columns={["x1", "x2", "x3", "x4", "b"]}
                     rows={["A", "B"]}
                     cells={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
                   />

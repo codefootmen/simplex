@@ -1,4 +1,4 @@
-class SimplexTable{
+class Simplex {
 
 
   calcPP(column, tableSimplex){
@@ -58,7 +58,7 @@ class SimplexTable{
         return table;
     }
 
-    celFocus = table[lineFocus][columnFocus];
+    let celFocus = table[lineFocus][columnFocus];
 
     //divide a linha para transformar o foco em 1
     table[lineFocus].forEach((x, i) => {
@@ -192,7 +192,7 @@ class SimplexTable{
     });
 
     // Resolve simplex simples
-    this.resolveSimplex(a);
+    return this.resolveSimplex(a);
   }
 
   isMultiplasSolucoes(restricoes, f_objetiva) {
@@ -218,4 +218,5 @@ class SimplexTable{
       return z[0].includes(0);
   }
 }
-export default SimplexTable;
+
+export default Simplex;
