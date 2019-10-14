@@ -4,24 +4,24 @@ class Simplex {
   calcPP(column, tableSimplex){
     let pp = [];
     tableSimplex.forEach(x => {
-        if(x[column] != 0){
+        if(x[column] !== 0){
             let temp = x[x.length-1]/x[column];
             if (temp >= 0)
-                pp.push(temp); 
+                pp.push(temp);
             else
                 pp.push(99999);
         }
     });
 
     let min = Math.min.apply(null, pp);
-    
+
     if(min === 99999) {
         return -1;
     }
-    
+
     pp.forEach((x, i) => {
         if(min === x){
-            return i;   
+            return i;
         }
     });
   }
@@ -37,7 +37,7 @@ class Simplex {
     }
   }
 
-  resolveSimplex(table){
+  solveSimplex(table){
     let columnFocus;
     let lineFocus = 0;
     let z = table[table.length - 1];
@@ -69,7 +69,7 @@ class Simplex {
 
     //Zerar a coluna
     table.forEach((x, i) => {
-        if(i != lineFocus){
+        if(i !== lineFocus){
             x.forEach((y, j) => {
                 table[i][j] = y - (y * table[lineFocus][j]);
             })
@@ -78,26 +78,54 @@ class Simplex {
 
     console.log(table);
 
-    return this.resolveSimplex(table);
+    return this.solveSimplex(table);
   }
 
 
-  twoSteps(numVariables, numFolgas, numArtificiais, restricoes, f_objetiva){
-    
+  twoSteps(numVariables, restricoes, f_objetiva) {
+
+    let numFolgas = 0;
+    let numArtificiais = 0;
+
+    numVariables = parseInt(numVariables);
+
     let table = [];
     let countInFolgas = 0;
     let countInArt = 0;
 
+    restricoes.forEach(x => {
+
+        switch(x[numVariables]){
+            case "<=":
+                numFolgas++;
+                break;
+
+            case ">=":
+                numArtificiais++;
+                break;
+
+            case "=":
+                numFolgas++
+                numArtificiais++;
+                break;
+
+            default:
+                alert("restrição inválida!");
+        }
+
+    });
+
+
     //insere as restrições na tabela
     restricoes.forEach((x,i) => {
         let temp = new Array(numVariables + numFolgas + numArtificiais + 1);
-        
+
         temp.forEach((x, i) => {
             temp[i] = 0;
         });
-        
+
         for(let j = 0; j < numVariables; j++ ){
-            temp[j] = x[j]; 
+            temp[j] = x[j];
         }
 
         switch(x[numVariables]){
@@ -105,12 +133,12 @@ class Simplex {
                 temp[numVariables + countInFolgas] = 1;
                 countInFolgas++;
                 break;
-        
+
             case ">=":
                 temp[numVariables + numFolgas + countInArt] = 1;
                 countInArt++;
                 break;
-            
+
             case "=":
                 temp[numVariables + countInFolgas] = -1;
                 temp[numVariables + numFolgas + countInArt] = 1;
@@ -119,11 +147,11 @@ class Simplex {
                 break;
 
             default:
-                throw "restrição inválida!";
+                alert("restrição inválida!");
         }
 
         temp[temp.length - 1] = x[x.length -1];
-      
+
         table.push(temp);
     });
 
@@ -146,13 +174,13 @@ class Simplex {
 
     //insere z' na tabela
     let zLinha = new Array(numVariables + numFolgas + numArtificiais + 1);
-    
+
     zLinha.forEach((x, i) => {
         zLinha[i] = 0;
     });
 
     let linhasArtificiais = [];
-    
+
     for(let i = 0; i < table.length - 1; i++){
         for(let j = 0; j < numArtificiais; j++){
             if(table[i][numVariables + numFolgas + j] === 1){
@@ -179,20 +207,20 @@ class Simplex {
 
 
     // Resolve primeira fase do metodo e retorna a tabela resolvida
-    let firstStepTable = this.resolveSimplex(table);
-    
-    // Limpar tabela, retirando zLinha e artificiais 
+    let firstStepTable = this.solveSimplex(table);
+
+    // Limpar tabela, retirando zLinha e artificiais
     firstStepTable.pop();
 
     let a = firstStepTable.splice(0, numVariables + numFolgas - 1);
     let b = firstStepTable.splice(firstStepTable[0].length - 1);
-    
+
     b.forEach((x, i) => {
         a[i].push(x[0]);
     });
 
     // Resolve simplex simples
-    return this.resolveSimplex(a);
+    return this.solveSimplex(a);
   }
 
   isMultiplasSolucoes(restricoes, f_objetiva) {
