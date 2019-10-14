@@ -2,34 +2,74 @@ import React, { Component } from "react";
 import { Table, Input, Select } from "bloomer";
 
 class InputTable extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      table: {
+        objFn: []
+      }
+    };
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(e) {
+    this.props.handler(
+        {
+            [e.target.getAttribute("cell")]: e.target.value
+    });
+  }
+
   render() {
     let numberOfVariables = [];
 
-    for (let i = 0; i < this.props.columns; i++) {
-      numberOfVariables[i] = (
-        <td>
-          <Input key={i} type="number" /> x{i + 1}
-        </td>
-      );
-    }
-
     let numberOfRestrictions = [];
 
+    let id = 0;
+    for (let j = 0; j < this.props.columns; j++) {
+      numberOfVariables[j] = (
+        <td>
+          <Input cell={id} type="number" onChange={this.handleChange} />{" "}
+          x{j + 1}
+        </td>
+      );
+      id++;
+    }
+
+    let firstRow = [...numberOfVariables];
+
     for (let i = 0; i < this.props.rows; i++) {
+      for (let j = 0; j < this.props.columns; j++) {
+        numberOfVariables[j] = (
+          <td>
+            <Input
+              cell={id}
+              type="number"
+              onChange={this.handleChange}
+            />{" "}
+            x{j + 1}
+          </td>
+        );
+        id++;
+      }
+
       numberOfRestrictions[i] = (
         <tr>
           <th>R{i + 1}</th>
-          {numberOfVariables}
+          {[...numberOfVariables]}
           <td>
-            <Select>
-              <option>{"<="}</option>
-              <option value="">{">="}</option>
-              <option value="">{"="}</option>
+            <Select cell={id++} onChange={this.handleChange}>
+              <option value="<=">{"<="}</option>
+              <option value=">=">{">="}</option>
+              <option value="=">{"="}</option>
             </Select>
           </td>
-
           <td>
-            <Input type="number" /> B
+            <Input
+              cell={id++}
+              type="number"
+              onChange={this.handleChange}
+            />{" "}
           </td>
         </tr>
       );
@@ -40,7 +80,7 @@ class InputTable extends Component {
         <thead>
           <tr>
             <th>Obj. Fn.</th>
-            {numberOfVariables}
+            {firstRow}
             <td>=</td>
             <td>Z</td>
           </tr>

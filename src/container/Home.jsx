@@ -9,15 +9,23 @@ class Home extends Component {
 
     this.state = {
       columns: 2,
-      rows: 1
+      rows: 1,
+      table: []
     };
 
     this.getColumns = this.getColumns.bind(this);
     this.getRows = this.getRows.bind(this);
+    this.handler = this.handler.bind(this);
   }
+
+  handler(state) {
+    this.setState(state);
+  }
+
   getRows(e) {
     this.setState({ rows: e.target.value });
   }
+
   getColumns(e) {
     this.setState({ columns: e.target.value });
   }
@@ -56,10 +64,10 @@ class Home extends Component {
                   <InputTable
                     columns={this.state.columns}
                     rows={this.state.rows}
+                    handler={this.handler}
                   />
                 </Column>
               </Columns>
-
               <Columns>
                 <Column>
                   <SimplexTable
