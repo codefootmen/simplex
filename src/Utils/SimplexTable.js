@@ -4,12 +4,26 @@ class SimplexTable{
   calcPP(column, tableSimplex){
     let pp = [];
     tableSimplex.forEach(x => {
-      let temp = x[x.length-1]/x[column];
-      if (temp >= 0)
-        pp.push(temp); 
+        if(x[column] != 0){
+            let temp = x[x.length-1]/x[column];
+            if (temp >= 0)
+                pp.push(temp); 
+            else
+                pp.push(99999);
+        }
     });
 
-    return Math.min.apply(null, pp);
+    if(pp.length === 0) {
+        return -1;
+    }
+
+    let min = Math.min.apply(null, pp);
+    
+    pp.forEach((x, i) => {
+        if(min === x){
+            return i;   
+        }
+    });
   }
 
   selectColumn(f_objetiva){
@@ -39,6 +53,11 @@ class SimplexTable{
         lineFocus = this.calcPP(columnFocus);
     }
 
+    if(lineFocus === -1){
+        alert("Ótimo não finíto");
+        return table;
+    }
+
     celFocus = table[lineFocus][columnFocus];
 
     //divide a linha para transformar o foco em 1
@@ -66,7 +85,6 @@ class SimplexTable{
   twoSteps(numVariables, numFolgas, numArtificiais, restricoes, f_objetiva){
     
     let table = [];
-    
     let countInFolgas = 0;
     let countInArt = 0;
 
@@ -128,6 +146,7 @@ class SimplexTable{
 
     //insere z' na tabela
     let zLinha = new Array(numVariables + numFolgas + numArtificiais + 1);
+    
     zLinha.forEach((x, i) => {
         zLinha[i] = 0;
     });
@@ -174,6 +193,29 @@ class SimplexTable{
 
     // Resolve simplex simples
     this.resolveSimplex(a);
+  }
+
+  isMultiplasSolucoes(restricoes, f_objetiva) {
+    let coeficiente = restricoes[0][0]/f_objetiva[0];
+
+    restricoes.forEach(x => {
+        let count = 0;
+        x.forEach((y, i) => {
+            if(y/f_objetiva[i] === coeficiente){
+                count++;
+            }
+        })
+        if(count === x.length){
+            return true;
+        }
+    })
+
+    return false;
+  }
+
+  isDegenerescencia(table) {
+      let z = table.splice[table.length -1];
+      return z[0].includes(0);
   }
 }
 export default SimplexTable;
