@@ -9,31 +9,37 @@ class Simplex {
             if (temp >= 0)
                 pp.push(temp);
             else
-                pp.push(99999);
+                pp.push(9999);
         }
+        else{
+            pp.push(9999);
+        }
+
     });
 
     let min = Math.min.apply(null, pp);
 
-    if(min === 99999) {
+    if(min === 9999) {
         return -1;
     }
 
-    pp.forEach((x, i) => {
-        if(min === x){
+    for(let i = 0; i < pp.length; i++){
+        if(min === pp[i]){
             return i;
         }
-    });
+    }
   }
 
   selectColumn(f_objetiva){
     let min = Math.min.apply(null, f_objetiva);
+
+
     if(min < 0){
-        f_objetiva.forEach((x, i) => {
-            if(min === x){
+        for(let i = 0; i < f_objetiva.length; i++){
+            if(min === f_objetiva[i]){
                 return i;
             }
-        });
+        }
     }
   }
 
@@ -50,7 +56,7 @@ class Simplex {
     columnFocus = this.selectColumn(z);
 
     if(columnFocus >= 0){
-        lineFocus = this.calcPP(columnFocus);
+        lineFocus = this.calcPP(columnFocus, table);
     }
 
     if(lineFocus === -1){
@@ -93,6 +99,7 @@ class Simplex {
     let countInFolgas = 0;
     let countInArt = 0;
 
+    console.log("restricoes: " + restricoes);
     restricoes.forEach(x => {
 
         switch(x[numVariables]){
@@ -117,15 +124,15 @@ class Simplex {
 
 
     //insere as restrições na tabela
-    restricoes.forEach((x,i) => {
+    restricoes.forEach(x => {
         let temp = new Array(numVariables + numFolgas + numArtificiais + 1);
 
-        temp.forEach((x, i) => {
+        for(let i = 0; i < temp.length; i++){
             temp[i] = 0;
-        });
+        }
 
         for(let j = 0; j < numVariables; j++ ){
-            temp[j] = x[j];
+            temp[j] = parseInt(x[j]);
         }
 
         switch(x[numVariables]){
@@ -150,24 +157,27 @@ class Simplex {
                 alert("restrição inválida!");
         }
 
-        temp[temp.length - 1] = x[x.length -1];
+        temp[temp.length - 1] = parseInt(x[x.length - 1]);
 
         table.push(temp);
     });
 
+    console.log(table);
+
     //insere a função objetiva (z) na tabela
     let z = new Array(numVariables + numFolgas + numArtificiais + 1);
-    z.forEach((x, i) => {
-        z[i] = 0;
-    });
 
-    f_objetiva.forEach((x, i) => {
+    for(let i = 0; i < z.length; i++){
+        z[i] = 0;
+    }
+
+    for(let i = 0; i < f_objetiva.length; i++) {
         if(i < f_objetiva.length - 1)
-            z[i] = x;
+            z[i] = parseInt(f_objetiva[i]);
 
         else
-            z[z.length - 1] = x;
-    });
+            z[z.length - 1] = parseInt(f_objetiva[i]);
+    }
 
     table.push(z);
 
@@ -175,9 +185,9 @@ class Simplex {
     //insere z' na tabela
     let zLinha = new Array(numVariables + numFolgas + numArtificiais + 1);
 
-    zLinha.forEach((x, i) => {
+    for(let i = 0; i < zLinha.length; i++){
         zLinha[i] = 0;
-    });
+    }
 
     let linhasArtificiais = [];
 
@@ -194,14 +204,14 @@ class Simplex {
         linhasArtificiais.forEach(x => {
             sumArt += table[x][i];
         })
-        zLinha[i] = sumArt;
+        zLinha[i] = sumArt * (-1);
     }
 
     let sumArt = 0;
     linhasArtificiais.forEach(x => {
         sumArt += table[x][table[x].length-1];
     })
-    zLinha[zLinha.length-1] = sumArt;
+    zLinha[zLinha.length-1] = sumArt * (-1);
 
     table.push(zLinha);
 
@@ -213,11 +223,12 @@ class Simplex {
     firstStepTable.pop();
 
     let a = firstStepTable.splice(0, numVariables + numFolgas - 1);
-    let b = firstStepTable.splice(firstStepTable[0].length - 1);
+    let b = firstStepTable.splice(firstStepTable.length - 1);
 
-    b.forEach((x, i) => {
-        a[i].push(x[0]);
-    });
+    
+    for(let i = 0; i < b[0].length; i++){
+        a[i].push(b[i][0]);
+    }
 
     // Resolve simplex simples
     return this.solveSimplex(a);
