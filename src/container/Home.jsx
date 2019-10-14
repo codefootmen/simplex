@@ -20,7 +20,8 @@ class Home extends Component {
     this.state = {
       simplex: new Simplex(),
       columns: 2,
-      rows: 1
+      rows: 1,
+      result: [[0, 0], [0, 0]]
     };
 
     this.getColumns = this.getColumns.bind(this);
@@ -44,10 +45,6 @@ class Home extends Component {
 
   solveSimplex() {
     this.organizeData();
-    if(this.state.restrictions !== undefined && this.state.objFn !== undefined){
-        let output = this.state.simplex.twoSteps(this.state.columns, this.state.restrictions, this.state.objFn);
-        console.log(output);
-    }
   }
 
   organizeData() {
@@ -69,9 +66,16 @@ class Home extends Component {
       }
     }
 
+    let output = this.state.simplex.twoSteps(
+      this.state.columns,
+      restrictions,
+      objFn
+    );
+
     this.setState({
-        objFn: objFn,
-        restrictions: restrictions
+      objFn: objFn,
+      restrictions: restrictions,
+      result: output
     });
   }
 
@@ -121,9 +125,9 @@ class Home extends Component {
               <Columns>
                 <Column>
                   <SimplexTable
-                    columns={["x1", "x2", "x3", "x4", "b"]}
-                    rows={["A", "B"]}
-                    cells={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+                    columns={this.state.result[0].map((_, i) => "x" + (i + 1))}
+                    rows={this.state.result.map((_, i) => "R" + (i + 1))}
+                    cells={this.state.result.flat()}
                   />
                 </Column>
               </Columns>
