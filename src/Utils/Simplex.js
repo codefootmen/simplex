@@ -200,7 +200,7 @@ class Simplex {
       linhasArtificiais.forEach(x => {
         sumArt += table[x][i];
       });
-      if(sumArt != 0)
+      if(sumArt !== 0)
           zLinha[i] = sumArt * -1;
     }
 
@@ -230,37 +230,40 @@ class Simplex {
     // Resolve simplex simples
     let result = this.solveSimplex(finalTable, 0, 2);
     
+    if(this.isMultiplasSolucoes(restricoes, f_objetiva)){
+        alert("Multiplas Soluções Ótimas!");
+    }
+
+    if(this.isDegenerescencia(result)){
+        alert("Degenerescência!");
+    }
+
     return result;
-    /*
-    finalTable = this.solveSimplex(finalTablsolveSimplexe, 0);
-    if (this.isMultiplasSolucoes(restricoes, f_objetiva)) {
-      alert("Multiplas soluções ótimas");
-    } else if (this.isDegenerescencia(finalTable)) {
-      alert("Degenerescência");
-    }*/
   }
 
   isMultiplasSolucoes(restricoes, f_objetiva) {
     let coeficiente = restricoes[0][0] / f_objetiva[0];
 
-    restricoes.forEach(x => {
-      let count = 0;
-      x.forEach((y, i) => {
-        if (y / f_objetiva[i] === coeficiente) {
-          count++;
+    for(let i = 0; i < restricoes.length; i++){
+        let count = 0; 
+        for(let j = 0; j < restricoes[i].length - 2; j++){
+            if(restricoes[i][j]/f_objetiva[j] === coeficiente){
+                count++;
+            }
         }
-      });
-      if (count === x.length) {
-        return true;
-      }
-    });
+
+        if(count === restricoes[i].length - 2){
+            return true
+        }
+    }
 
     return false;
   }
 
   isDegenerescencia(table) {
-    let b = table.splice(table.length - 1);
-    return b[0].includes(0);
+    let b = table.map(x => x[x.length-1]);
+    b.pop();
+    return b.includes(0);
   }
 }
 
