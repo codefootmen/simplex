@@ -3,8 +3,8 @@ class Simplex {
     let pp = [];
     let tableTemp = [...tableSimplex];
     tableTemp.pop();
-    if(step === 1){
-        tableTemp.pop();
+    if (step === 1) {
+      tableTemp.pop();
     }
     tableTemp.forEach(x => {
       if (x[column] !== 0) {
@@ -43,53 +43,57 @@ class Simplex {
     }
   }
 
-  solveSimplex(table, tam, step) {
+  solveSimplex(table, tam, step, iterations) {
     let columnFocus;
     let lineFocus = 0;
     let z = [...table[table.length - 1]];
     if (tam === 0) z.pop();
 
     if (Math.min.apply(null, z) >= 0) {
-      return table;
+      if (iterations.length === 0) {
+        return table;
+      }
+      return iterations;
     }
 
     columnFocus = this.selectColumn(z);
 
     if (columnFocus >= 0) {
-        lineFocus = this.calcPP(columnFocus, table, step);
+      lineFocus = this.calcPP(columnFocus, table, step);
     }
 
     if (lineFocus === -1) {
       alert("Ótimo não finíto");
-      return table;
+      return iterations;
     }
 
     let celFocus = table[lineFocus][columnFocus];
 
     //divide a linha para transformar o foco em 1
 
-    for(let i = 0; i < table[lineFocus].length; i++) {
-        if (celFocus !== 0) {
-            table[lineFocus][i] = Math.round(table[lineFocus][i]/celFocus * 100) / 100;
-        }
+    for (let i = 0; i < table[lineFocus].length; i++) {
+      if (celFocus !== 0) {
+        table[lineFocus][i] =
+          Math.round((table[lineFocus][i] / celFocus) * 100) / 100;
+      }
     }
-
+    iterations.push(table.map(x => x.map(x => x)));
     console.log(table);
 
     //Zerar a coluna
-    for(let i = 0; i < table.length; i++){
-        if(i !== lineFocus){
-            let valueFocus = table[i][columnFocus];
-            for(let j = 0; j < table[i].length; j++){
-                table[i][j] = table[i][j] - (valueFocus * table[lineFocus][j]);
-            }
+    for (let i = 0; i < table.length; i++) {
+      if (i !== lineFocus) {
+        let valueFocus = table[i][columnFocus];
+        for (let j = 0; j < table[i].length; j++) {
+          table[i][j] = table[i][j] - valueFocus * table[lineFocus][j];
         }
+      }
     }
 
     console.log(table);
-
+    iterations.push(table.map(x => x.map(x => x)));
     tam++;
-    return this.solveSimplex(table, tam, step);
+    return this.solveSimplex(table, tam, step, iterations);
   }
 
   twoSteps(numVariables, restricoes, f_objetiva) {
@@ -200,8 +204,7 @@ class Simplex {
       linhasArtificiais.forEach(x => {
         sumArt += table[x][i];
       });
-      if(sumArt !== 0)
-          zLinha[i] = sumArt * -1;
+      if (sumArt !== 0) zLinha[i] = sumArt * -1;
     }
 
     let sumArt = 0;
@@ -212,9 +215,10 @@ class Simplex {
 
     table.push(zLinha);
 
+    let iterations = [];
     // Resolve primeira fase do metodo e retorna a tabela resolvida
-    let firstStepTable = this.solveSimplex(table, 0, 1);
-
+    let output = this.solveSimplex(table, 0, 1, iterations);
+    let firstStepTable = output[output.length - 1];
     // Limpar tabela, retirando zLinha e artificiais
     firstStepTable.pop();
 
@@ -227,41 +231,43 @@ class Simplex {
       finalTable[i].push(...b);
     }
 
+    iterations = [];
     // Resolve simplex simples
-    let result = this.solveSimplex(finalTable, 0, 2);
-    
-    if(this.isMultiplasSolucoes(restricoes, f_objetiva)){
-        alert("Multiplas Soluções Ótimas!");
+    let output2 = this.solveSimplex(finalTable, 0, 2, iterations);
+    let result = output2[output2.length - 1];
+
+    if (this.isMultiplasSolucoes(restricoes, f_objetiva)) {
+      alert("Multiplas Soluções Ótimas!");
     }
 
-    if(this.isDegenerescencia(result)){
-        alert("Degenerescência!");
+    if (this.isDegenerescencia(result)) {
+      alert("Degenerescência!");
     }
-
-    return result;
+    output.push(output2);
+    return output;
   }
 
   isMultiplasSolucoes(restricoes, f_objetiva) {
     let coeficiente = restricoes[0][0] / f_objetiva[0];
 
-    for(let i = 0; i < restricoes.length; i++){
-        let count = 0; 
-        for(let j = 0; j < restricoes[i].length - 2; j++){
-            if(restricoes[i][j]/f_objetiva[j] === coeficiente){
-                count++;
-            }
+    for (let i = 0; i < restricoes.length; i++) {
+      let count = 0;
+      for (let j = 0; j < restricoes[i].length - 2; j++) {
+        if (restricoes[i][j] / f_objetiva[j] === coeficiente) {
+          count++;
         }
+      }
 
-        if(count === restricoes[i].length - 2){
-            return true
-        }
+      if (count === restricoes[i].length - 2) {
+        return true;
+      }
     }
 
     return false;
   }
 
   isDegenerescencia(table) {
-    let b = table.map(x => x[x.length-1]);
+    let b = table.map(x => x[x.length - 1]);
     b.pop();
     return b.includes(0);
   }

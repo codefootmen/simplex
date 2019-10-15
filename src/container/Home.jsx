@@ -21,7 +21,7 @@ class Home extends Component {
       simplex: new Simplex(),
       columns: 2,
       rows: 1,
-      result: [[0, 0], [0, 0]]
+      result: [[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]]
     };
 
     this.getColumns = this.getColumns.bind(this);
@@ -101,6 +101,16 @@ class Home extends Component {
   }
 
   render() {
+    let tables = [];
+    for (let i = 0; i < this.state.result.length; i++) {
+      tables[i] = (
+        <SimplexTable
+          columns={this.state.result[i][0].map((_, i) => "x" + (i + 1))}
+          rows={this.state.result[i].map((_, i) => "R" + (i + 1))}
+          cells={this.state.result[i].flat()}
+        />
+      );
+    }
     return (
       <div className="App">
         <Columns>
@@ -144,13 +154,7 @@ class Home extends Component {
                 </Column>
               </Columns>
               <Columns>
-                <Column>
-                  <SimplexTable
-                    columns={this.state.result[0].map((_, i) => "x" + (i + 1))}
-                    rows={this.state.result.map((_, i) => "R" + (i + 1))}
-                    cells={this.state.result.flat()}
-                  />
-                </Column>
+                <Column>{tables}</Column>
               </Columns>
             </div>
           </Column>
