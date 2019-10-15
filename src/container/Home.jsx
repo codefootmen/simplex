@@ -30,6 +30,27 @@ class Home extends Component {
     this.organizeData = this.organizeData.bind(this);
     this.solveSimplex = this.solveSimplex.bind(this);
   }
+  componentDidMount() {
+    let state = {};
+    let i = 0;
+    let j = 0;
+
+    for (i; i < this.state.columns; i++) {
+      state[i] = 0;
+    }
+
+    for (let r = 0; r < this.state.rows; r++) {
+      for (j; j < Number(this.state.columns) + 2; j++) {
+        state[i + j] = 0;
+        if (j === Number(this.state.columns)) {
+          state[i + j] = "<=";
+        }
+      }
+    }
+
+    console.log(state);
+    this.setState(state);
+  }
 
   handler(state) {
     this.setState(state);

@@ -5,32 +5,27 @@ class InputTable extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      table: {
-        objFn: []
-      }
-    };
+    this.state = {};
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange(e) {
-    this.props.handler(
-        {
-            [e.target.getAttribute("cell")]: e.target.value
+    this.props.handler({
+      [e.target.getAttribute("cell")]: e.target.value
     });
   }
 
   render() {
+    /*----------*/
     let numberOfVariables = [];
-
     let numberOfRestrictions = [];
 
     let id = 0;
     for (let j = 0; j < this.props.columns; j++) {
       numberOfVariables[j] = (
         <td>
-          <Input cell={id} type="number" onChange={this.handleChange} />{" "}
-          x{j + 1}
+          <Input cell={id} type="number" onChange={this.handleChange} /> x
+          {j + 1}
         </td>
       );
       id++;
@@ -42,12 +37,8 @@ class InputTable extends Component {
       for (let j = 0; j < this.props.columns; j++) {
         numberOfVariables[j] = (
           <td>
-            <Input
-              cell={id}
-              type="number"
-              onChange={this.handleChange}
-            />{" "}
-            x{j + 1}
+            <Input cell={id} type="number" onChange={this.handleChange} /> x
+            {j + 1}
           </td>
         );
         id++;
@@ -65,11 +56,7 @@ class InputTable extends Component {
             </Select>
           </td>
           <td>
-            <Input
-              cell={id++}
-              type="number"
-              onChange={this.handleChange}
-            />{" "}
+            <Input cell={id++} type="number" onChange={this.handleChange} />{" "}
           </td>
         </tr>
       );
