@@ -1,7 +1,12 @@
 class Simplex {
-  calcPP(column, tableSimplex) {
+  calcPP(column, tableSimplex, step) {
     let pp = [];
-    tableSimplex.forEach(x => {
+    let tableTemp = [...tableSimplex];
+    tableTemp.pop();
+    if(step === 1){
+        tableTemp.pop();
+    }
+    tableTemp.forEach(x => {
       if (x[column] !== 0) {
         let temp = x[x.length - 1] / x[column];
         if (temp >= 0) pp.push(temp);
@@ -25,21 +30,23 @@ class Simplex {
   }
 
   selectColumn(f_objetiva) {
-    let min = Math.min.apply(null, f_objetiva);
+    let z = [...f_objetiva];
+    z.pop();
+    let min = Math.min.apply(null, z);
 
     if (min < 0) {
-      for (let i = 0; i < f_objetiva.length; i++) {
-        if (min === f_objetiva[i]) {
+      for (let i = 0; i < z.length; i++) {
+        if (min === z[i]) {
           return i;
         }
       }
     }
   }
 
-  solveSimplex(table, tam) {
+  solveSimplex(table, tam, step) {
     let columnFocus;
     let lineFocus = 0;
-    let z = table[table.length - 1];
+    let z = [...table[table.length - 1]];
     if (tam === 0) z.pop();
 
     if (Math.min.apply(null, z) >= 0) {
@@ -49,7 +56,7 @@ class Simplex {
     columnFocus = this.selectColumn(z);
 
     if (columnFocus >= 0) {
-      lineFocus = this.calcPP(columnFocus, table);
+        lineFocus = this.calcPP(columnFocus, table, step);
     }
 
     if (lineFocus === -1) {
@@ -60,25 +67,29 @@ class Simplex {
     let celFocus = table[lineFocus][columnFocus];
 
     //divide a linha para transformar o foco em 1
-    table[lineFocus].forEach((x, i) => {
-      if (celFocus !== 0) table[lineFocus][i] = x / celFocus;
-    });
+
+    for(let i = 0; i < table[lineFocus].length; i++) {
+        if (celFocus !== 0) {
+            table[lineFocus][i] = Math.round(table[lineFocus][i]/celFocus * 100) / 100;
+        }
+    }
 
     console.log(table);
 
     //Zerar a coluna
-    table.forEach((x, i) => {
-      if (i !== lineFocus) {
-        x.forEach((y, j) => {
-          table[i][j] = y - y * table[lineFocus][j];
-        });
-      }
-    });
+    for(let i = 0; i < table.length; i++){
+        if(i !== lineFocus){
+            let valueFocus = table[i][columnFocus];
+            for(let j = 0; j < table[i].length; j++){
+                table[i][j] = table[i][j] - (valueFocus * table[lineFocus][j]);
+            }
+        }
+    }
 
     console.log(table);
 
     tam++;
-    return this.solveSimplex(table, tam);
+    return this.solveSimplex(table, tam, step);
   }
 
   twoSteps(numVariables, restricoes, f_objetiva) {
@@ -98,11 +109,11 @@ class Simplex {
           numFolgas++;
           break;
 
-        case ">=":
+        case "=":
           numArtificiais++;
           break;
 
-        case "=":
+        case ">=":
           numFolgas++;
           numArtificiais++;
           break;
@@ -130,12 +141,12 @@ class Simplex {
           countInFolgas++;
           break;
 
-        case ">=":
+        case "=":
           temp[numVariables + numFolgas + countInArt] = 1;
           countInArt++;
           break;
 
-        case "=":
+        case ">=":
           temp[numVariables + countInFolgas] = -1;
           temp[numVariables + numFolgas + countInArt] = 1;
           countInArt++;
@@ -154,7 +165,7 @@ class Simplex {
     console.log(table);
 
     //insere a função objetiva (z) na tabela
-    let z = new Array(numVariables + numFolgas + numArtificiais + 2);
+    let z = new Array(numVariables + numFolgas + numArtificiais + 1);
 
     for (let i = 0; i < z.length; i++) {
       z[i] = 0;
@@ -189,7 +200,8 @@ class Simplex {
       linhasArtificiais.forEach(x => {
         sumArt += table[x][i];
       });
-      zLinha[i] = sumArt * -1;
+      if(sumArt != 0)
+          zLinha[i] = sumArt * -1;
     }
 
     let sumArt = 0;
@@ -201,7 +213,7 @@ class Simplex {
     table.push(zLinha);
 
     // Resolve primeira fase do metodo e retorna a tabela resolvida
-    let firstStepTable = this.solveSimplex(table, 0);
+    let firstStepTable = this.solveSimplex(table, 0, 1);
 
     // Limpar tabela, retirando zLinha e artificiais
     firstStepTable.pop();
@@ -216,11 +228,11 @@ class Simplex {
     }
 
     // Resolve simplex simples
-    let result = this.solveSimplex(finalTable, 0);
-    result[result.length-1].push(0);
+    let result = this.solveSimplex(finalTable, 0, 2);
+    
     return result;
     /*
-    finalTable = this.solveSimplex(finalTable, 0);
+    finalTable = this.solveSimplex(finalTablsolveSimplexe, 0);
     if (this.isMultiplasSolucoes(restricoes, f_objetiva)) {
       alert("Multiplas soluções ótimas");
     } else if (this.isDegenerescencia(finalTable)) {
