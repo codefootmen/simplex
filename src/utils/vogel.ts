@@ -87,7 +87,7 @@ function recurseVogel(
   availability: List<number>,
   result: List<number>
 ): any {
-  console.log(result);
+  //console.log(result);
 
   if (costs.isEmpty() || costs!.get(0)!.isEmpty()) {
     return result;

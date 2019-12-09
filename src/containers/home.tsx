@@ -15,13 +15,15 @@ import "bulma/css/bulma.css";
 import "../App.css";
 import InputTable from "../components/inputTable";
 import vogel from "../utils/vogel";
+import VogelResult from "../components/vogelResult";
 
 export default function Home() {
   const [columns, setColumns] = useState(3);
   const [rows, setRows] = useState(3);
   const [matrix, setMatrix] = useState();
+  const [vogelResult, setVogelResult] = useState(List());
 
-  console.log(vogel());
+  //console.log(vogel());
 
   return (
     <div className="App">
@@ -71,15 +73,18 @@ export default function Home() {
                     for (let i = 0; i < rows; i++) {
                       let tmp = [];
                       for (let j = 0; j < columns; j++) {
-                        tmp.push(matrix[count++]);
+                        tmp.push(parseInt(matrix[count++]));
                       }
-                      nece = nece.push(matrix[count++]);
+                      nece = nece.push(parseInt(matrix[count++]));
                       input = input.push(List(tmp));
                     }
                     for (let j = 0; j < columns; j++) {
-                      aval = aval.push(matrix[count++]);
+                      aval = aval.push(parseInt(matrix[count++]));
                     }
-                    console.log(vogel(input, nece, aval));
+                    let steps = vogel(input, nece, aval);
+                    let result = steps.reduce((x, y) => x + y, 0);
+
+                    setVogelResult(steps.push(result));
                   }}
                 >
                   Go
@@ -87,7 +92,9 @@ export default function Home() {
               </Column>
             </Columns>
             <Columns>
-              <Column>Meh</Column>
+              <Column>
+                <VogelResult result={vogelResult} />
+              </Column>
             </Columns>
           </div>
         </Column>
