@@ -2,6 +2,8 @@ import { List } from "immutable";
 
 export default function vogel() 
 {
+  //// Exemplo 1
+  
   let costs = List([
     List([15700, 12800, 17900]),
     List([18500, 11200, 18200]),
@@ -10,6 +12,19 @@ export default function vogel()
 
   let necessity: List<number> = List([46, 20, 19]);
   let availability: List<number> = List([42, 23, 28]);
+
+
+  //// Exemplo 2
+
+  // let costs = List([
+  //   List([40600, 71400, 32200, 54600]),
+  //   List([73500, 66500, 43400, 60900]),
+  //   List([53200, 86800, 58100, 38500])
+  // ]);
+
+  // let necessity: List<number> = List([415, 660, 440]);
+  // let availability: List<number> = List([530, 240, 325, 420]);
+
   //----------------------------//
 
   let diff = difference(necessity, availability);
@@ -135,7 +150,7 @@ function recurseVogel
       .indexOf(Math.min(...costs.get(rPenaltyIndex)!.toArray()));
 
     let posValue = Math.min(...costs.get(rPenaltyIndex)!.toArray());
-    let need = necessity.get(costs.get(popIndex)!.indexOf(posValue))!;
+    let need = necessity.get(rPenaltyIndex)!;
     let avaliable = availability.get(popIndex)!;
 
     let minValue = Math.min(need, avaliable);
