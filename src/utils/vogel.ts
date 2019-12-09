@@ -33,7 +33,6 @@ export default function vogel
   //----------------------------//
 
   let diff = difference(necessity, availability);
-
   if (diff < 0) 
   {
     necessity = necessity.push(Math.abs(diff));
@@ -44,18 +43,18 @@ export default function vogel
     availability = availability.push(diff);
     costs = List(costs.map(x => x.push(999999)));
   }
+
   let result: List<number> = List(solveVogel(costs, necessity, availability).toArray());
-  
   if(diff !== 0)
   {
     result = result.delete(result.size - 1);
   }
 
-  console.log(result.reduce((x,y) => x+y, 0));
+  console.log(result.reduce((x, y) => x + y, 0));
 }
 
 
-/// Calc the difference between necessity and avaibility
+/// Calc the difference between necessity and availability
 function difference(necessity: List<number>, availability: List<number>) 
 {
   let n = necessity.reduce((x, y) => x + y, 0);
@@ -75,7 +74,6 @@ function penalty(costs: List<List<number>>)
   });
 
   let minColVal: List<number> = List();
-
   for (let i = 0; i < costs.get(0)!.size; i++) 
   {
     minColVal = minColVal.clear();
@@ -83,6 +81,7 @@ function penalty(costs: List<List<number>>)
     {
       minColVal = minColVal.push(costs.get(j)!.get(i)!);
     }
+
     minColVal = minColVal.sort((a, b) => a - b);
     colPenality = colPenality.push(minColVal.get(1)! - minColVal.get(0)!);
   }
@@ -90,7 +89,7 @@ function penalty(costs: List<List<number>>)
   return List([rowPenality, colPenality]);
 }
 
-/// A recursive funcition to solve the transport method (Vogel)
+/// A recursive function to solve the transport method (Vogel)
 function recurseVogel
 (
   costs: List<List<number>>,
@@ -111,25 +110,21 @@ function recurseVogel
     .get(0)!.indexOf(Math.max(...penalties.get(0)!.toArray()));
   let cPenaltyIndex = penalties
     .get(1)!.indexOf(Math.max(...penalties.get(1)!.toArray()));
-
   let rowPenalty = penalties.get(0)!.get(rPenaltyIndex)!;
   let colPenalty = penalties.get(1)!.get(cPenaltyIndex)!;
 
   if(colPenalty > rowPenalty) 
   {
     let tmp = List();
-    
     for (let i = 0; i < costs.size; i++) 
     {
       tmp = tmp.push(costs.get(i)!.get(cPenaltyIndex));
     }
 
     let popIndex = tmp.indexOf(Math.min(...tmp!.toArray()));
-
     let posValue = tmp.get(popIndex);
     let need = necessity.get(popIndex)!;
     let avaliable = availability.get(popIndex)!;
-
     let minValue = Math.min(need, avaliable);
       
     result = result.push(posValue * minValue);
@@ -157,7 +152,6 @@ function recurseVogel
     let posValue = Math.min(...costs.get(rPenaltyIndex)!.toArray());
     let need = necessity.get(rPenaltyIndex)!;
     let avaliable = availability.get(popIndex)!;
-
     let minValue = Math.min(need, avaliable);
       
     result = result.push(posValue * minValue);
@@ -181,7 +175,7 @@ function recurseVogel
 }
 
 
-/// A method to start the recursive solve vogel method 
+/// A method to start the recursive solve vogel method
 function solveVogel(costs: List<List<number>>, necessity: List<number>, availability: List<number>) 
 {
   let result = List();  

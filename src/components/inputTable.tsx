@@ -24,7 +24,7 @@ export default function InputTable
     for (let j = 0; j < columns; j++) {
       c[j] = (
         <td>
-          <Input type="number" />
+          <Input type="number" id={"cell-"+ (i+1) + "-" + (j+1)}/>
         </td>
       );
     }
@@ -34,7 +34,7 @@ export default function InputTable
           <th>{"O" + (i + 1)}</th>,
           ...c,
           <td>
-            <Input type="number" />
+            <Input type="number" id={"cell-" + (i+1) + "-" + (columns+1)}/>
           </td>
         ]}
       </tr>
