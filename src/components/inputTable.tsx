@@ -1,13 +1,12 @@
 import React from "react";
 import { Table, Input, Select } from "bloomer";
 
-export default function InputTable({
-  rows,
-  columns
-}: {
-  rows: number;
-  columns: number;
-}) {
+export default function InputTable
+(
+  { rows, columns } : 
+  { rows: number; columns: number; }
+) 
+{
   let r = [];
   let c = [];
 
@@ -17,7 +16,7 @@ export default function InputTable({
       {new Array(columns).fill(0).map((x, i) => (
         <th>{"T" + (i + 1)}</th>
       ))}
-      <th>obg</th>
+      <th>Necessity</th>
     </tr>
   );
 
@@ -32,7 +31,7 @@ export default function InputTable({
     r[i + 1] = (
       <tr>
         {[
-          <th>{"O"+(i+1)}</th>,
+          <th>{"O" + (i + 1)}</th>,
           ...c,
           <td>
             <Input type="number" />
@@ -40,6 +39,7 @@ export default function InputTable({
         ]}
       </tr>
     );
+    r[rows+1] = <tr>{[<th>Availability</th>, ...c]}</tr>;
     c = [];
   }
 

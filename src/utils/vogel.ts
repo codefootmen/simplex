@@ -1,29 +1,34 @@
 import { List } from "immutable";
 
-export default function vogel() 
+export default function vogel 
+(
+  costs: List<List<number>> = List([]), 
+  necessity: List<number> = List(), 
+  availability: List<number> = List()
+) 
 {
   //// Exemplo 1
   
-  let costs = List([
-    List([15700, 12800, 17900]),
-    List([18500, 11200, 18200]),
-    List([21000, 17600, 19300])
-  ]);
+  // costs = List([
+  //   List([15700, 12800, 17900]),
+  //   List([18500, 11200, 18200]),
+  //   List([21000, 17600, 19300])
+  // ]);
 
-  let necessity: List<number> = List([46, 20, 19]);
-  let availability: List<number> = List([42, 23, 28]);
+  // necessity = List([46, 20, 19]);
+  // availability = List([42, 23, 28]);
 
 
   //// Exemplo 2
 
-  // let costs = List([
+  // costs = List([
   //   List([40600, 71400, 32200, 54600]),
   //   List([73500, 66500, 43400, 60900]),
   //   List([53200, 86800, 58100, 38500])
   // ]);
 
-  // let necessity: List<number> = List([415, 660, 440]);
-  // let availability: List<number> = List([530, 240, 325, 420]);
+  // necessity = List([415, 660, 440]);
+  // availability = List([530, 240, 325, 420]);
 
   //----------------------------//
 
