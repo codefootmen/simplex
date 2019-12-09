@@ -1,14 +1,12 @@
 import { List } from "immutable";
 
-export default function vogel 
-(
-  costs: List<List<number>> = List([]), 
-  necessity: List<number> = List(), 
+export default function vogel(
+  costs: List<List<number>> = List([]),
+  necessity: List<number> = List(),
   availability: List<number> = List()
-) 
-{
+) {
   //// Exemplo 1
-  
+
   // costs = List([
   //   List([15700, 12800, 17900]),
   //   List([18500, 11200, 18200]),
@@ -17,7 +15,6 @@ export default function vogel
 
   // necessity = List([46, 20, 19]);
   // availability = List([42, 23, 28]);
-
 
   //// Exemplo 2
 
@@ -33,38 +30,34 @@ export default function vogel
   //----------------------------//
 
   let diff = difference(necessity, availability);
-  if (diff < 0) 
-  {
+  if (diff < 0) {
     necessity = necessity.push(Math.abs(diff));
     costs = costs.push(List(Array(availability.size).fill(999999)));
-  } 
-  else if (diff > 0) 
-  {
+  } else if (diff > 0) {
     availability = availability.push(diff);
     costs = List(costs.map(x => x.push(999999)));
   }
 
-  let result: List<number> = List(solveVogel(costs, necessity, availability).toArray());
-  if(diff !== 0)
-  {
+  let result: List<number> = List(
+    solveVogel(costs, necessity, availability).toArray()
+  );
+  if (diff !== 0) {
     result = result.delete(result.size - 1);
   }
 
   console.log(result.reduce((x, y) => x + y, 0));
+  return result;
 }
 
-
 /// Calc the difference between necessity and availability
-function difference(necessity: List<number>, availability: List<number>) 
-{
+function difference(necessity: List<number>, availability: List<number>) {
   let n = necessity.reduce((x, y) => x + y, 0);
   let a = availability.reduce((x, y) => x + y, 0);
   return n - a;
 }
 
 /// Calc the penalty for each row and column
-function penalty(costs: List<List<number>>) 
-{
+function penalty(costs: List<List<number>>) {
   let rowPenality: List<number> = List();
   let colPenality: List<number> = List();
 
@@ -74,11 +67,9 @@ function penalty(costs: List<List<number>>)
   });
 
   let minColVal: List<number> = List();
-  for (let i = 0; i < costs.get(0)!.size; i++) 
-  {
+  for (let i = 0; i < costs.get(0)!.size; i++) {
     minColVal = minColVal.clear();
-    for (let j = 0; j < costs.size; j++) 
-    {
+    for (let j = 0; j < costs.size; j++) {
       minColVal = minColVal.push(costs.get(j)!.get(i)!);
     }
 
@@ -90,34 +81,31 @@ function penalty(costs: List<List<number>>)
 }
 
 /// A recursive function to solve the transport method (Vogel)
-function recurseVogel
-(
+function recurseVogel(
   costs: List<List<number>>,
   necessity: List<number>,
   availability: List<number>,
   result: List<number>
-): any 
-{
+): any {
   console.log(result);
 
-  if (costs.isEmpty() || costs!.get(0)!.isEmpty()) 
-  {
+  if (costs.isEmpty() || costs!.get(0)!.isEmpty()) {
     return result;
   }
 
   let penalties = penalty(costs);
   let rPenaltyIndex = penalties
-    .get(0)!.indexOf(Math.max(...penalties.get(0)!.toArray()));
+    .get(0)!
+    .indexOf(Math.max(...penalties.get(0)!.toArray()));
   let cPenaltyIndex = penalties
-    .get(1)!.indexOf(Math.max(...penalties.get(1)!.toArray()));
+    .get(1)!
+    .indexOf(Math.max(...penalties.get(1)!.toArray()));
   let rowPenalty = penalties.get(0)!.get(rPenaltyIndex)!;
   let colPenalty = penalties.get(1)!.get(cPenaltyIndex)!;
 
-  if(colPenalty > rowPenalty) 
-  {
+  if (colPenalty > rowPenalty) {
     let tmp = List();
-    for (let i = 0; i < costs.size; i++) 
-    {
+    for (let i = 0; i < costs.size; i++) {
       tmp = tmp.push(costs.get(i)!.get(cPenaltyIndex));
     }
 
@@ -126,25 +114,21 @@ function recurseVogel
     let need = necessity.get(popIndex)!;
     let avaliable = availability.get(popIndex)!;
     let minValue = Math.min(need, avaliable);
-      
+
     result = result.push(posValue * minValue);
     availability = availability.set(cPenaltyIndex, avaliable - minValue);
     necessity = necessity.set(popIndex, need - minValue);
-    
-    if (avaliable - minValue === 0)
-    {
+
+    if (avaliable - minValue === 0) {
       costs = costs.map(x => x.delete(cPenaltyIndex));
       availability = availability.delete(cPenaltyIndex);
     }
 
-    if (need - minValue === 0)
-    {
+    if (need - minValue === 0) {
       costs = costs.delete(popIndex);
       necessity = necessity.delete(popIndex);
     }
-  }
-  else 
-  {
+  } else {
     let popIndex = costs
       .get(rPenaltyIndex)!
       .indexOf(Math.min(...costs.get(rPenaltyIndex)!.toArray()));
@@ -153,31 +137,31 @@ function recurseVogel
     let need = necessity.get(rPenaltyIndex)!;
     let avaliable = availability.get(popIndex)!;
     let minValue = Math.min(need, avaliable);
-      
+
     result = result.push(posValue * minValue);
     availability = availability.set(popIndex, avaliable - minValue);
     necessity = necessity.set(rPenaltyIndex, need - minValue);
-  
-    if (avaliable - minValue === 0)
-    {
+
+    if (avaliable - minValue === 0) {
       costs = costs.map(x => x.delete(popIndex));
       availability = availability.delete(popIndex);
     }
 
-    if (need - minValue === 0)
-    {
+    if (need - minValue === 0) {
       costs = costs.delete(rPenaltyIndex);
       necessity = necessity.delete(rPenaltyIndex);
     }
   }
-  
+
   return recurseVogel(costs, necessity, availability, result);
 }
 
-
 /// A method to start the recursive solve vogel method
-function solveVogel(costs: List<List<number>>, necessity: List<number>, availability: List<number>) 
-{
-  let result = List();  
+function solveVogel(
+  costs: List<List<number>>,
+  necessity: List<number>,
+  availability: List<number>
+) {
+  let result = List();
   return recurseVogel(costs, necessity, availability, result);
 }

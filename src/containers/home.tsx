@@ -9,6 +9,7 @@ import {
   Control,
   Input
 } from "bloomer";
+import { List } from "immutable";
 
 import "bulma/css/bulma.css";
 import "../App.css";
@@ -18,6 +19,7 @@ import vogel from "../utils/vogel";
 export default function Home() {
   const [columns, setColumns] = useState(3);
   const [rows, setRows] = useState(3);
+  const [matrix, setMatrix] = useState();
 
   console.log(vogel());
 
@@ -55,12 +57,33 @@ export default function Home() {
           <div className="App-header">
             <Columns>
               <Column>
-                <InputTable rows={rows} columns={columns} />
+                <InputTable handler={setMatrix} rows={rows} columns={columns} />
               </Column>
             </Columns>
             <Columns>
               <Column>
-                <Button>Go</Button>
+                <Button
+                  onClick={() => {
+                    let input = List();
+                    let aval: List<number> = List();
+                    let nece: List<number> = List();
+                    let count = 0;
+                    for (let i = 0; i < rows; i++) {
+                      let tmp = [];
+                      for (let j = 0; j < columns; j++) {
+                        tmp.push(matrix[count++]);
+                      }
+                      nece = nece.push(matrix[count++]);
+                      input = input.push(List(tmp));
+                    }
+                    for (let j = 0; j < columns; j++) {
+                      aval = aval.push(matrix[count++]);
+                    }
+                    console.log(vogel(input, nece, aval));
+                  }}
+                >
+                  Go
+                </Button>
               </Column>
             </Columns>
             <Columns>

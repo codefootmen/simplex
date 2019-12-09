@@ -1,14 +1,18 @@
 import React from "react";
 import { Table, Input, Select } from "bloomer";
 
-export default function InputTable
-(
-  { rows, columns } : 
-  { rows: number; columns: number; }
-) 
-{
+export default function InputTable({
+  rows,
+  columns,
+  handler
+}: {
+  rows: number;
+  columns: number;
+  handler: Function;
+}) {
   let r = [];
   let c = [];
+  let count = 0;
 
   r[0] = (
     <tr>
@@ -24,7 +28,18 @@ export default function InputTable
     for (let j = 0; j < columns; j++) {
       c[j] = (
         <td>
-          <Input type="number" id={"cell-"+ (i+1) + "-" + (j+1)}/>
+          <Input
+            onChange={(e: any) => {
+              let id = e.target.id;
+              let value = e.target.value;
+              handler((prevState: any) => {
+                return { ...prevState, [id]: value };
+              });
+            }}
+            type="number"
+            placeholder="0"
+            id={String(count++)}
+          />
         </td>
       );
     }
@@ -34,12 +49,22 @@ export default function InputTable
           <th>{"O" + (i + 1)}</th>,
           ...c,
           <td>
-            <Input type="number" id={"cell-" + (i+1) + "-" + (columns+1)}/>
+            <Input
+              onChange={(e: any) => {
+                let id = e.target.id;
+                let value = e.target.value;
+                handler((prevState: any) => {
+                  return { ...prevState, [id]: value };
+                });
+              }}
+              type="number"
+              id={String(count++)}
+            />
           </td>
         ]}
       </tr>
     );
-    r[rows+1] = <tr>{[<th>Availability</th>, ...c]}</tr>;
+    r[rows + 1] = <tr>{[<th>Availability</th>, ...c]}</tr>;
     c = [];
   }
 
