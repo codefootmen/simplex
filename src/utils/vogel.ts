@@ -38,14 +38,13 @@ export default function vogel(
     costs = List(costs.map(x => x.push(999999)));
   }
 
-  let result: List<number> = List(
+  let result: List<[]> = List(
     solveVogel(costs, necessity, availability).toArray()
   );
   if (diff !== 0) {
     result = result.delete(result.size - 1);
   }
 
-  console.log(result.reduce((x, y) => x + y, 0));
   return result;
 }
 
@@ -85,10 +84,8 @@ function recurseVogel(
   costs: List<List<number>>,
   necessity: List<number>,
   availability: List<number>,
-  result: List<number>
+  result: List<List<number>>
 ): any {
-  //console.log(result);
-
   if (costs.isEmpty() || costs!.get(0)!.isEmpty()) {
     return result;
   }
@@ -110,12 +107,12 @@ function recurseVogel(
     }
 
     let popIndex = tmp.indexOf(Math.min(...tmp!.toArray()));
-    let posValue = tmp.get(popIndex);
+    let posValue: number = tmp.get(popIndex);
     let need = necessity.get(popIndex)!;
     let avaliable = availability.get(popIndex)!;
     let minValue = Math.min(need, avaliable);
 
-    result = result.push(posValue * minValue);
+    result = result.push(List([posValue, minValue]));
     availability = availability.set(cPenaltyIndex, avaliable - minValue);
     necessity = necessity.set(popIndex, need - minValue);
 
@@ -128,17 +125,20 @@ function recurseVogel(
       costs = costs.delete(popIndex);
       necessity = necessity.delete(popIndex);
     }
+
+    console.log("popIndex", popIndex);
+    console.log("penaltyIndex", cPenaltyIndex);
   } else {
     let popIndex = costs
       .get(rPenaltyIndex)!
       .indexOf(Math.min(...costs.get(rPenaltyIndex)!.toArray()));
 
-    let posValue = Math.min(...costs.get(rPenaltyIndex)!.toArray());
+    let posValue: number = Math.min(...costs.get(rPenaltyIndex)!.toArray());
     let need = necessity.get(rPenaltyIndex)!;
     let avaliable = availability.get(popIndex)!;
     let minValue = Math.min(need, avaliable);
 
-    result = result.push(posValue * minValue);
+    result = result.push(List([posValue, minValue]));
     availability = availability.set(popIndex, avaliable - minValue);
     necessity = necessity.set(rPenaltyIndex, need - minValue);
 
@@ -147,6 +147,8 @@ function recurseVogel(
       availability = availability.delete(popIndex);
     }
 
+    console.log("popIndex", popIndex);
+    console.log("penaltyIndex", rPenaltyIndex);
     if (need - minValue === 0) {
       costs = costs.delete(rPenaltyIndex);
       necessity = necessity.delete(rPenaltyIndex);

@@ -21,7 +21,8 @@ export default function Home() {
   const [columns, setColumns] = useState(3);
   const [rows, setRows] = useState(3);
   const [matrix, setMatrix] = useState();
-  const [vogelResult, setVogelResult] = useState(List());
+  const [vogelResult, setVogelResult] = useState([[]]);
+  const [final, setFinal] = useState(0);
 
   //console.log(vogel());
 
@@ -82,9 +83,34 @@ export default function Home() {
                       aval = aval.push(parseInt(matrix[count++]));
                     }
                     let steps = vogel(input, nece, aval);
-                    let result = steps.reduce((x, y) => x + y, 0);
+                    let reduced = steps.map((x: any) => {
+                      return x.get(0) * x.get(1);
+                    });
+                    let values = steps.map((x: any) => x.get(0));
+                    console.log(values.toJS());
 
-                    setVogelResult(steps.push(result));
+                    reduced = reduced.filter(x => x < 999999);
+
+                    let result: number = reduced.reduce(
+                      (x: number, y: number) => x + y,
+                      0
+                    );
+                    setFinal(result);
+                    values.pop();
+                    let pos = List(
+                      input.map((x, i) => {
+                        let n: any = List();
+                        values.forEach((p, j) => {
+                          if (x.indexOf(p) > -1) {
+                            n = n.push([reduced.get(j), i, x.indexOf(p)]);
+                          }
+                        });
+                        return n;
+                      })
+                    );
+
+                    setVogelResult(pos.toJS());
+                    console.log(pos.toJS());
                   }}
                 >
                   Go
@@ -93,7 +119,9 @@ export default function Home() {
             </Columns>
             <Columns>
               <Column>
-                <VogelResult result={vogelResult} />
+                {vogelResult.length > 0 ? (
+                  <VogelResult result={vogelResult} final={final} />
+                ) : null}
               </Column>
             </Columns>
           </div>
